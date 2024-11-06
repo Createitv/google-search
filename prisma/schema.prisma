@@ -35,8 +35,8 @@ model CountryCompanyID {
     countryChinaName    String //国名中文
     countryAbbreviation String?
 
-    companySuffixes String[] //公司后缀
-    countrySearchValue  String? //google里面的国家代号Value
+    companySuffixes    String[] //公司后缀
+    countrySearchValue String? //google里面的国家代号Value
 
     position String? // 所在州
 }
@@ -49,7 +49,7 @@ model CommonWebsite {
 }
 
 model SearchKeyWord {
-    id            String @id @default(cuid()) @map("_id")
+    id            String  @id @default(cuid()) @map("_id")
     word          String // 关键字
     languageType  String // 是什么语言写的
     toEnglishWord String //对应英文
