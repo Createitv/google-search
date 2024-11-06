@@ -19,9 +19,14 @@ const items = [
     icon: Home,
   },
   {
-    title: "设置",
+    title: "搜索功能开启设置",
     url: "/admin",
     icon: Settings,
+  },
+  {
+    title: "常用搜索网页",
+    url: "/common-website",
+    icon: Inbox,
   },
 ]
 

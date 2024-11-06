@@ -13,7 +13,6 @@ const config = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: true,
-  swcMinify: true,
   output: "standalone",
 };
 
