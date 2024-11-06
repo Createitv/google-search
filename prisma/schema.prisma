@@ -2,19 +2,56 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-    provider = "postgresql"
+    provider = "mongodb"
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+model WebSiteSettings {
+    id              String  @id @default(cuid()) @map("_id")
+    region          Boolean @default(true) //地区
+    language        Boolean @default(true) // 语言
+    website         Boolean @default(true) // 在那些网站
+    searchResultNum Boolean @default(true) //展示结果数量
+
+    exactMatch Boolean @default(true)
+
+    filetype     Boolean @default(false)
+    timestamp    Boolean @default(false)
+    excluedWords Boolean @default(false)
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
 
-    @@index([name])
+model CountryCompanyID {
+    id String @id @default(cuid()) @map("_id")
+
+    countryEnglishName  String //国名英文
+    countryChinaName    String //国名中文
+    countryAbbreviation String?
+
+    companySuffixes String[] //公司后缀
+    countrySearchValue  String? //google里面的国家代号Value
+
+    position String? // 所在州
+}
+
+model CommonWebsite {
+    id   String  @id @default(cuid()) @map("_id")
+    url  String
+    name String
+    icon String?
+}
+
+model SearchKeyWord {
+    id            String @id @default(cuid()) @map("_id")
+    word          String // 关键字
+    languageType  String // 是什么语言写的
+    toEnglishWord String //对应英文
+    importance    String? //重要程度
 }

@@ -1,0 +1,79 @@
+[
+  {
+    "countryEnglishName": "Afghanistan",
+    "countryChineseName": "阿富汗",
+    "countryAbbreviation": "AF",
+    "countrySearchValue": "AF",
+    "companySuffixes": ["LTD"]
+  },
+  {
+    "countryEnglishName": "Aland Islands",
+    "countryChineseName": "奥兰群岛",
+    "countryAbbreviation": "AX",
+    "countrySearchValue": "AX",
+    "companySuffixes": ["OY", "AB"]
+  },
+  {
+    "countryEnglishName": "Albania",
+    "countryChineseName": "阿尔巴尼亚",
+    "countryAbbreviation": "AL",
+    "countrySearchValue": "AL",
+    "companySuffixes": ["SH.P.K", "AB"]
+  },
+  {
+    "countryEnglishName": "Algeria",
+    "countryChineseName": "阿尔及利亚",
+    "countryAbbreviation": "DZ",
+    "countrySearchValue": "DZ",
+    "companySuffixes": ["CO", "LTD"]
+  },
+  {
+    "countryEnglishName": "American Samoa",
+    "countryChineseName": "美属萨摩亚",
+    "countryAbbreviation": "AS",
+    "countrySearchValue": "AS",
+    "companySuffixes": ["INC", "CORP", "LLC"]
+  },
+  {
+    "countryEnglishName": "Andorra",
+    "countryChineseName": "安道尔",
+    "countryAbbreviation": "AD",
+    "countrySearchValue": "AD",
+    "companySuffixes": ["LTD", "CORP", "LLC"]
+  },
+  {
+    "countryEnglishName": "Angola",
+    "countryChineseName": "安哥拉",
+    "countryAbbreviation": "AO",
+    "countrySearchValue": "AO",
+    "companySuffixes": ["LDA", "CORP", "LLC"]
+  },
+  {
+    "countryEnglishName": "Anguilla",
+    "countryChineseName": "安圭拉",
+    "countryAbbreviation": "AI",
+    "countrySearchValue": "AI",
+    "companySuffixes": ["LTD", "PLC", "LLP"]
+  },
+  {
+    "countryEnglishName": "Angigua and Barbuda",
+    "countryChineseName": "安提瓜岛和巴布达",
+    "countryAbbreviation": "AD",
+    "countrySearchValue": "AD",
+    "companySuffixes": ["LTD", "INC", "CORPORATION", "LLC"]
+  },
+  {
+    "countryEnglishName": "Argentina",
+    "countryChineseName": "阿根廷",
+    "countryAbbreviation": "AR",
+    "countrySearchValue": "AR",
+    "companySuffixes": ["S.A", "LTD", "SRL", "CO"]
+  },
+  {
+    "countryEnglishName": "Armenia",
+    "countryChineseName": "亚美尼亚",
+    "countryAbbreviation": "AM",
+    "countrySearchValue": "AM",
+    "companySuffixes": ["LLC", "LTD", "SRL", "CO"]
+  }
+]
