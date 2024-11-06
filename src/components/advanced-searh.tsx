@@ -25,17 +25,17 @@ export default function AdvancedGoogleSearch() {
   const [isAddRegion, setIsaddRegion] = useState(false)
   const [region, setRegion] = useState("") //地区设置
   const [selectKeyWord, setSelectKeyWord] = useState("") // 搜索关键词
-  const [fileType, setFileType] = useState("")
-  const [timeRange, setTimeRange] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [site, setSite] = useState("")
-  const [exactPhrase, setExactPhrase] = useState("")
-  const [isExactPhare, setIsExactPhare] = useState<boolean>(true)
-  const [excludeWords, setExcludeWords] = useState("")
-  const [numericRange, setNumericRange] = useState({ min: "", max: "" })
-  const [resultCount, setResultCount] = useState("100")
+  const [fileType, setFileType] = useState("") //文件类型
+  const [timeRange, setTimeRange] = useState("") // 时间
+  const [searchQuery, setSearchQuery] = useState("") //搜索参数
+  const [site, setSite] = useState("")  //地址
+  const [exactPhrase, setExactPhrase] = useState("") //自定义匹配文字
+  const [isExactPhare, setIsExactPhare] = useState<boolean>(true) //开启精确匹配
+  const [excludeWords, setExcludeWords] = useState("") // 排除词
+  const [numericRange, setNumericRange] = useState({ min: "", max: "" }) //数值范围
+  const [resultCount, setResultCount] = useState("100") // 搜索结果数字
 
-  // 请求数据
+  // 请求数据只请求一次
   const [httpOnce, setHttpOnce] = useState(true)
 
   async function fetchSetting() {
@@ -54,15 +54,15 @@ export default function AdvancedGoogleSearch() {
       fetchSetting()
       setHttpOnce(false)
     }
-    const region_ = `${region && isAddRegion ? `region:${region}` : ""}`
-    const fileType_ = `${fileType ? `filetype:${fileType}` : ''}`
-    const timeRange_ = `${timeRange ? `after:${timeRange}` : ""}`
+    const region_ = `${region && isAddRegion ? `region:${region} ` : ""}`
+    const fileType_ = `${fileType ? `filetype:${fileType} ` : ''}`
+    const timeRange_ = `${timeRange ? `after:${timeRange} ` : ""}`
 
     const resultCount_ = `${resultCount ? `&num=${resultCount}` : ''}`
     const excludeWords_ = `${excludeWords ? `-${excludeWords.split(' ').join(' -')} ` : ''}`
     const numericRange_ = `${numericRange.min && numericRange.max ? `${numericRange.min}..${numericRange.max} ` : ''}`
-    const site_ = `${site ? `site:${site}` : ''}`
-    let exactPhrase_ = `${isExactPhare ? `"${exactPhrase}"` : exactPhrase ? `${exactPhrase}` : ''}`
+    const site_ = `${site ? `site:${site} ` : ''}`
+    let exactPhrase_ = `${isExactPhare ? `"${exactPhrase}" ` : exactPhrase ? `${exactPhrase} ` : ''}`
     let companyID_ = ''
     // 公司ID
     if (region !== "") {
@@ -71,12 +71,13 @@ export default function AdvancedGoogleSearch() {
       companyID_ = joinWithOr(suffixes)
     }
     if (selectKeyWord !== "") {
-      exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}"` : ""}`
+      exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}" ` : " "}`
     }
     if (exactPhrase !== "") {
+      // 如果关键词自定义就不用
       setSelectKeyWord("")
     }
-    const query = `${site_} ${region_} ${fileType_} ${timeRange_} ${exactPhrase_} ${numericRange_} ${excludeWords_} ${companyID_} ${resultCount_}`
+    const query = `${site_}${region_}${fileType_}${timeRange_}${exactPhrase_}${numericRange_}${excludeWords_}${companyID_}${resultCount_}`
     setSearchQuery(query.trim())
   }, [region, resultCount, isAddRegion, isExactPhare, numericRange, excludeWords, site, searchQuery, fileType, exactPhrase, selectKeyWord])
 
@@ -109,7 +110,7 @@ export default function AdvancedGoogleSearch() {
     return { value: item.url, label: item.name }
   }) as Option[]
   return (
-    <Card className="w-full min-w-3xl mx-auto">
+    <Card className="w-full min-w-fit mx-auto">
       <CardHeader>
         <CardTitle>高级Google搜索</CardTitle>
         <CardDescription>选择搜索条件,生成高级搜索查询</CardDescription>

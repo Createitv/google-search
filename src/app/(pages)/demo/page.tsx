@@ -11,9 +11,8 @@ const options = [
   { value: 'svelte', label: 'Svelte' },
 ]
 
-export default function Home(props) {
+export default function Home({ }) {
   const [selectedValue, setSelectedValue] = React.useState<string>('')
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <h1 className="mb-4 text-2xl font-bold">可搜索的选择组件示例</h1>
