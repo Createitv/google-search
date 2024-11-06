@@ -12,6 +12,9 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  reactStrictMode: true,
+  swcMinify: true,
+  output: "standalone",
 };
 
 export default config;
