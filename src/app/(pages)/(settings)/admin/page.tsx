@@ -1,11 +1,14 @@
 'use client'
 
+import AdvancedGoogleSearch from '@/components/advanced-searh'
 import EditableTable from '@/components/editable-table'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { toast } from '@/hooks/use-toast'
-import React, { useState } from 'react'
+import { getWebsiteSettings } from '@/server/action'
+import { WebSiteSettings } from '@prisma/client'
+import React, { useEffect, useState } from 'react'
 
 
 
@@ -24,29 +27,66 @@ interface Feature {
   enabled: boolean
 }
 
-const initialFeatures: Feature[] = [
-  { id: '1', name: '夜间模式', enabled: false },
-  { id: '2', name: '自动保存', enabled: true },
-  { id: '3', name: '通知', enabled: false },
-  { id: '4', name: '高级搜索', enabled: true },
-  { id: '5', name: '数据分析', enabled: false },
-  { id: '6', name: '多语言支持', enabled: true },
-  { id: '7', name: '离线模式', enabled: false },
-  { id: '8', name: '协作功能', enabled: true },
-]
+const initialFeatures: Feature[] = []
 
 export function FeatureToggles() {
   const [features, setFeatures] = useState<Feature[]>(initialFeatures)
+  // 起始数据
+  const [websiteSettings, setWebsiteSettings] = useState<WebSiteSettings>()
+  // 请求数据只请求一次
+  const [httpOnce, setHttpOnce] = useState(true)
+
+  useEffect(() => {
+    async function fetchSetting() {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/website-setting`
+      const res = await fetch(url)
+      // 指定类型
+      const settings = await res.json()
+      // 网站设置
+      const setRes = settings["settings"]
+      setWebsiteSettings(setRes)
+      // @ts-ignore
+      const options = [
+        {
+          id: '1', name: '选择国家', enabled: setRes?.region as boolean,
+        },
+        {
+          id: '2', name: '排除关键字', enabled: setRes?.excluedWords,
+        },
+        {
+          id: '3', name: '文件类型搜索', enabled: setRes?.filetype,
+        },
+        {
+          id: '4', name: '搜索结果数量', enabled: setRes?.searchResultNum,
+        },
+        {
+          id: '5', name: '开启精确匹配', enabled: setRes?.exactMatch,
+        },
+        {
+          id: '6', name: '开启限定区域匹配', enabled: setRes?.language,
+        },
+        {
+          id: '7', name: '开启时间范围', enabled: setRes?.timestamp,
+        },
+
+      ]
+      // @ts-ignore
+      setFeatures(options)
+    }
+    if (httpOnce) {
+      fetchSetting()
+      setHttpOnce(false)
+    }
+  })
 
   const handleToggle = (id: string) => {
     setFeatures(features.map(feature =>
       feature.id === id ? { ...feature, enabled: !feature.enabled } : feature
     ))
   }
-
-  const handleSave = () => {
+  const handleSave = async () => {
     // 这里模拟保存到数据库的操作
-    console.log('Saving features:', features)
+    console.log('Saving features:', features, websiteSettings)
     // 显示保存成功的提示
     toast({
       title: "设置已保存",
@@ -74,7 +114,7 @@ export function FeatureToggles() {
           </div>
         ))}
       </div>
-      <Button onClick={handleSave} className="w-1/2">
+      <Button onClick={handleSave} className="w-1/2 mb-4">
         保存设置
       </Button>
     </div>

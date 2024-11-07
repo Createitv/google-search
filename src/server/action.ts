@@ -3,6 +3,7 @@ import { db } from "./db";
 import { NewProduct } from "@/components/editable-table";
 import { CommonWebsite } from "@prisma/client";
 
+// 获取设置缩写
 export const getWebsiteSettings = async () => {
   const res = await db.webSiteSettings.findFirst({
     where: {

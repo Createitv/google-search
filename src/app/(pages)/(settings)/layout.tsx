@@ -11,7 +11,7 @@ export default function Layout({ children }) {
         <AppSidebar />
         <main>
           <SidebarTrigger />
-          <section className="w-full h-full flex mx-auto">
+          <section className="w-full h-full flex mx-auto" suppressHydrationWarning>
             <section>
               {children}
             </section>

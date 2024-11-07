@@ -35,3 +35,26 @@ export function findCompanySuffixesByCountryName(
   const country = countries.find((c) => c.countryEnglishName === countryName);
   return country ? country.companySuffixes : undefined;
 }
+
+export function getFeatureNameByTag(tag: string): string | undefined {
+  switch (tag) {
+    case "region":
+      return "选择国家";
+    case "excludeWords":
+      return "排除关键字";
+    case "website":
+      return "网站内搜索";
+    case "searchResultNum":
+      return "搜索结果";
+    case "exactMatch":
+      return "开启精确匹配";
+    case "language":
+      return "开启限定区域匹配";
+    case "timestamp":
+      return "开启时间范围";
+    case "fileType":
+      return "文件类型搜索";
+    default:
+      return undefined; // 如果没有匹配到任何tag，则返回undefined
+  }
+}

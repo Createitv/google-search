@@ -14,6 +14,7 @@ import { findCompanySuffixesByCountryName, joinWithOr } from '@/lib/utils'
 import Link from 'next/link'
 
 
+
 export default function AdvancedGoogleSearch() {
 
   // 起始数据
@@ -80,7 +81,7 @@ export default function AdvancedGoogleSearch() {
     }
     const query = `${site_}${region_}${fileType_}${timeRange_}${exactPhrase_}${numericRange_}${excludeWords_}${companyID_}${resultCount_}`
     setSearchQuery(query.trim())
-  }, [region, resultCount, isAddRegion, isExactPhare, numericRange, excludeWords, site, searchQuery, fileType, exactPhrase, selectKeyWord])
+  }, [region, resultCount, isAddRegion, isExactPhare, numericRange, excludeWords, site, searchQuery, fileType, exactPhrase, selectKeyWord, timeRange])
 
 
   const handleCheckboxChange = (checked: any) => {
@@ -126,7 +127,7 @@ export default function AdvancedGoogleSearch() {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
 
-          <div className="space-y-2 flex flex-col">
+          {websiteSettings?.region && <div className="space-y-2 flex flex-col">
             <Label htmlFor="site" className='mb-2'>选择国家</Label>
             <SearchableSelect
               options={countryOptions}
@@ -137,7 +138,7 @@ export default function AdvancedGoogleSearch() {
                 console.log("region", region)
               }}
             />
-          </div>
+          </div>}
 
           <div className="space-y-2 flex flex-col">
             <Label htmlFor="site" className='mb-2'>预选搜索关键字</Label>
@@ -155,27 +156,33 @@ export default function AdvancedGoogleSearch() {
 
           {websiteSettings?.filetype &&
             <Select onValueChange={setFileType}>
-              <SelectTrigger>
-                <SelectValue placeholder="选择文件类型" />
-              </SelectTrigger>
+              <section className="space-y-2 flex flex-col">
+                <Label htmlFor="site" className='mb-2'>文件类型搜索</Label>
+                <SelectTrigger className='text-black font-bold'>
+                  <SelectValue placeholder="选择文件类型" />
+                </SelectTrigger>
+              </section>
               <SelectContent>
                 <SelectItem value="pdf">PDF</SelectItem>
                 <SelectItem value="doc">DOC</SelectItem>
                 <SelectItem value="xls">XLS</SelectItem>
                 <SelectItem value="ppt">PPT</SelectItem>
-                <SelectItem value="ppt">TXT</SelectItem>
-                <SelectItem value="ppt">MP3</SelectItem>
-                <SelectItem value="ppt">MP4</SelectItem>
-                <SelectItem value="ppt">CSV</SelectItem>
+                <SelectItem value="txt">TXT</SelectItem>
+                <SelectItem value="mp3">MP3</SelectItem>
+                <SelectItem value="mp4">MP4</SelectItem>
+                <SelectItem value="csv">CSV</SelectItem>
               </SelectContent>
             </Select>
           }
 
           {websiteSettings?.timestamp &&
             <Select onValueChange={setTimeRange}>
-              <SelectTrigger>
-                <SelectValue placeholder="选择时间范围" />
-              </SelectTrigger>
+              <section className="space-y-2 flex flex-col">
+                <Label htmlFor="site" className='mb-2'>时间范围筛选</Label>
+                <SelectTrigger className='text-black font-bold'>
+                  <SelectValue placeholder="选择时间范围" />
+                </SelectTrigger>
+              </section>
               <SelectContent>
                 <SelectItem value="d">过去24小时</SelectItem>
                 <SelectItem value="w">过去一周</SelectItem>
@@ -187,15 +194,6 @@ export default function AdvancedGoogleSearch() {
         </div>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            {/* <div className="space-y-2">
-              <Label htmlFor="site">网站内搜索</Label>
-              <Input
-                id="site"
-                value={site}
-                onChange={(e) => setSite(e.target.value)}
-                placeholder="例如: wikipedia.org"
-              />
-            </div> */}
 
             <div className="space-y-2 flex flex-col">
               <Label htmlFor="site" className='mb-2'>网站内搜索</Label>
@@ -209,21 +207,22 @@ export default function AdvancedGoogleSearch() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="resultCount">搜索结果数量 {resultCount}</Label>
-              <Select onValueChange={setResultCount}>
-                <SelectTrigger>
-                  <SelectValue placeholder="选择结果数量" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
+            {websiteSettings?.searchResultNum &&
+              <div className="space-y-2">
+                <Label htmlFor="resultCount">搜索结果数量 {resultCount}</Label>
+                <Select onValueChange={setResultCount}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="选择结果数量" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            }
 
 
           </div>
@@ -245,17 +244,21 @@ export default function AdvancedGoogleSearch() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="terms" checked={isExactPhare} onCheckedChange={handleCheckboxChange}
-            />
-            <Label htmlFor="exactPhrase">开启精确匹配</Label>
-          </div>
+          {websiteSettings?.exactMatch &&
+            <div className="flex items-center space-x-2">
+              <Checkbox id="terms" checked={isExactPhare} onCheckedChange={handleCheckboxChange}
+              />
+              <Label htmlFor="exactPhrase">开启精确匹配</Label>
+            </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox id="terms" checked={isAddRegion} onCheckedChange={handleIsAddRegion}
-            />
-            <Label htmlFor="exactPhrase">开启限定地区匹配</Label>
-          </div>
+          }
+          {websiteSettings?.language &&
+            <div className="flex items-center space-x-2">
+              <Checkbox id="terms" checked={isAddRegion} onCheckedChange={handleIsAddRegion}
+              />
+              <Label htmlFor="exactPhrase">开启限定地区匹配</Label>
+            </div>
+          }
         </div>
 
         <div className="space-y-2">
@@ -279,7 +282,7 @@ export default function AdvancedGoogleSearch() {
             placeholder="这里显示生成的搜索词"
           />
         </div>
-      </CardContent>
+      </CardContent >
       <CardFooter>
         <Button className="w-full" onClick={handleSearch}>
           在Google中搜索
@@ -287,6 +290,6 @@ export default function AdvancedGoogleSearch() {
       </CardFooter>
 
 
-    </Card>
+    </Card >
   )
 }

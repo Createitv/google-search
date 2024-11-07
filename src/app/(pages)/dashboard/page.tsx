@@ -39,7 +39,7 @@ function WebSiteSettingsPage({ }) {
   }
 
   return (
-    <div className="grid w-full max-w-sm flex justify-center items-center gap-1.5">
+    <div className="grid w-full max-w-sm justify-center items-center gap-1.5">
       <Label htmlFor="picture">文件上传</Label>
       <Input id="picture" type="file" onChange={handleOnChange} />
       <Button type="submit">Subscribe</Button>
