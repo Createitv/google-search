@@ -1,7 +1,7 @@
 import { SETTING_DB_ID } from "@/lib/constant";
 import { db } from "./db";
-import { CommonWebsite } from "@prisma/client";
 import { NewProduct } from "@/components/editable-table";
+import { CommonWebsite } from "@prisma/client";
 
 export const getWebsiteSettings = async () => {
   const res = await db.webSiteSettings.findFirst({
@@ -40,6 +40,57 @@ export const addCommonWebsite = async (option: NewProduct) => {
     return res;
   } catch {
     return {
+      id: "",
+      name: "",
+    };
+  }
+};
+
+// 删除常访问网页
+export const deleteCommonWebsite = async (id: string) => {
+  console.log("id delete", id);
+  try {
+    const res = await db.commonWebsite.delete({
+      where: {
+        id: id,
+      },
+    });
+    return {
+      code: 200,
+      status: "ok",
+      res,
+    };
+  } catch {
+    return {
+      code: 200,
+      status: "error",
+      id: "",
+      name: "",
+    };
+  }
+};
+
+// 修改当前值
+export const updateCommonWebsite = async (option: CommonWebsite) => {
+  try {
+    const res = await db.commonWebsite.update({
+      where: {
+        id: option.id,
+      },
+      data: {
+        name: option.name,
+        url: option.url,
+      },
+    });
+    return {
+      code: 200,
+      status: "ok",
+      res,
+    };
+  } catch {
+    return {
+      code: 200,
+      status: "error",
       id: "",
       name: "",
     };

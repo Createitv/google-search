@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import SearchableSelect, { Option } from './searchable-select'
 import { Textarea } from "@/components/ui/textarea"
 import { findCompanySuffixesByCountryName, joinWithOr } from '@/lib/utils'
+import Link from 'next/link'
 
 
 export default function AdvancedGoogleSearch() {
@@ -113,7 +114,14 @@ export default function AdvancedGoogleSearch() {
     <Card className="w-full min-w-fit mx-auto">
       <CardHeader>
         <CardTitle>高级Google搜索</CardTitle>
-        <CardDescription>选择搜索条件,生成高级搜索查询</CardDescription>
+        <CardDescription className='flex flex-row justify-between'>
+          <p>
+            选择搜索条件,生成高级搜索查询
+          </p>
+          <p className='text-neutral-900'>
+            <Link href="/admin" >管理界面</Link>
+          </p>
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

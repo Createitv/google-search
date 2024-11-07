@@ -17,17 +17,17 @@ interface AlertState {
 
 const EditableTable: React.FC = () => {
   const [data, setData] = useState<Website[]>([]);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editedData, setEditedData] = useState<Website | null>(null);
   const [newRow, setNewRow] = useState<NewProduct>({ name: '', url: "" });
   const [alert, setAlert] = useState<AlertState | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   async function fetchCommonWebsite() {
     const res = await fetch('/api/common-website', {
       method: 'GET',
       // 使用 force-cache 策略
-      cache: 'force-cache',
+      // cache: 'force-cache',
     });
     const websiteSettings: Website[] = await res.json()
     console.log("websiteSettings", websiteSettings)
@@ -40,7 +40,7 @@ const EditableTable: React.FC = () => {
   }, [])
 
   // 处理选择/取消选择
-  const toggleSelect = (id: number): void => {
+  const toggleSelect = (id: string): void => {
     const newSelected = new Set(selectedIds);
     if (newSelected.has(id)) {
       newSelected.delete(id);
@@ -59,38 +59,46 @@ const EditableTable: React.FC = () => {
     }
   };
 
-  // 删除单条数据
+  // 删除单条数据 Done
   const handleDelete = async (id: string): Promise<void> => {
     try {
       // 这里应该是您的API调用
-      // await fetch(`/api/deleteItem/${id}`, {
-      //   method: 'DELETE'
-      // });
-
-      setData(prev => prev.filter(item => item.id !== id));
-      showAlert("数据已成功删除");
+      const res = await fetch('/api/common-website', {
+        method: 'DELETE',
+        body: JSON.stringify([id])
+      });
+      const deleteRes = await res.json()
+      if (deleteRes.status === "ok") {
+        setData(prev => prev.filter(item => item.id !== id));
+        showAlert("数据已成功删除");
+      } else {
+        showAlert("删除数据时出错", true);
+      }
     } catch (error) {
       showAlert("删除数据时出错", true);
     }
   };
 
-  // 批量删除数据
+  // 批量删除数据 Done
   const handleBatchDelete = async (): Promise<void> => {
     try {
       if (selectedIds.size === 0) {
         showAlert("请先选择要删除的数据", true);
         return;
       }
-
       // 这里应该是您的API调用
-      // await fetch('/api/batchDelete', {
-      //   method: 'DELETE',
-      //   body: JSON.stringify(Array.from(selectedIds))
-      // });
-
-      setData(prev => prev.filter(item => !selectedIds.has(item.id)));
-      setSelectedIds(new Set());
-      showAlert(`成功删除 ${selectedIds.size} 条数据`);
+      const res = await fetch('/api/common-website', {
+        method: 'DELETE',
+        body: JSON.stringify(Array.from(selectedIds))
+      });
+      const deleteRes = await res.json()
+      if (deleteRes['status'] === "ok") {
+        setData(prev => prev.filter(item => !selectedIds.has(item.id)));
+        setSelectedIds(new Set());
+        showAlert(`成功删除 ${selectedIds.size} 条数据`);
+      } else {
+        showAlert("批量删除数据时出错", true);
+      }
     } catch (error) {
       showAlert("批量删除数据时出错", true);
     }
@@ -103,7 +111,7 @@ const EditableTable: React.FC = () => {
   };
 
   // 进入编辑模式
-  const startEditing = (id: number): void => {
+  const startEditing = (id: string): void => {
     const rowToEdit = data.find(item => item.id === id);
     if (rowToEdit) {
       setEditingId(id);
@@ -130,10 +138,15 @@ const EditableTable: React.FC = () => {
       if (!editedData) return;
 
       // 这里应该是您的API调用
-      // await fetch('/api/updateItem', {
-      //   method: 'PUT',
-      //   body: JSON.stringify(editedData)
-      // });
+      const res = await fetch('/api/common-website', {
+        method: 'PUT',
+        body: JSON.stringify(editedData)
+      });
+      const deleteRes = await res.json()
+      // console.log("editor data", editedData)
+      // const deleteRes = {
+      //   "status": "ok"
+      // }
 
       setData(prev =>
         prev.map(item =>
@@ -142,7 +155,11 @@ const EditableTable: React.FC = () => {
       );
       setEditingId(null);
       setEditedData(null);
-      showAlert("数据已成功更新");
+      if (deleteRes['status'] === "ok") {
+        showAlert(`更新数据成功`);
+      } else {
+        showAlert("更新数据时出错", true);
+      }
     } catch (error) {
       showAlert("更新数据时出错", true);
     }
@@ -156,7 +173,7 @@ const EditableTable: React.FC = () => {
     }));
   };
 
-  // 添加新行
+  // 添加新行 Done
   const addNewRow = async (): Promise<void> => {
     try {
       if (!newRow.name || !newRow.url) {
@@ -185,7 +202,7 @@ const EditableTable: React.FC = () => {
     }
   };
 
-  // 渲染批量删除按钮
+  // 渲染批量删除按钮 Done
   const renderBatchDeleteButton = () => {
     if (selectedIds.size === 0) return null;
 
@@ -206,6 +223,7 @@ const EditableTable: React.FC = () => {
 
   return (
     <div className="w-full p-4">
+      <h1 className='text-3xl font-bold mb-10'>常用网页搜索设置</h1>
       {alert && (
         <Alert className={`mb-4 ${alert.isError ? 'bg-red-100' : 'bg-green-100'}`}>
           <AlertDescription>
@@ -262,16 +280,16 @@ const EditableTable: React.FC = () => {
               </td>
             </tr>
             {data.map((row, idx) => (
-              <tr key={idx} className="border-t">
+              <tr key={row.id} className="border-t">
                 <td className="px-4 py-2">
                   <Checkbox
-                    checked={selectedIds.has(idx)}
-                    onClick={() => toggleSelect(idx)}
+                    checked={selectedIds.has(row.id)}
+                    onClick={() => toggleSelect(row.id)}
                   />
                 </td>
-                <td className="px-4 py-2">{idx}</td>
+                <td className="px-4 py-2">{idx + 1}</td>
                 <td className="px-4 py-2">
-                  {editingId === idx ? (
+                  {editingId === row.id ? (
                     <Input
                       value={editedData?.name}
                       onChange={(e) => handleEditChange('name', e.target.value)}
@@ -282,20 +300,20 @@ const EditableTable: React.FC = () => {
                   )}
                 </td>
                 <td className="px-4 py-2">
-                  {editingId === idx ? (
+                  {editingId === row.id ? (
                     <Input
                       value={editedData?.url}
-                      onChange={(e) => handleEditChange('url', Number(e.target.value))}
+                      onChange={(e) => handleEditChange('url', e.target.value)}
                       className="w-full"
                     />
                   ) : (
-                    row.url
+                      row.url
                   )}
                 </td>
 
                 <td className="px-4 py-2">
                   <div className="space-x-2">
-                    {editingId === idx ? (
+                    {editingId === row.id ? (
                       <>
                         <Button onClick={saveEdit} size="sm">
                           保存
@@ -314,14 +332,14 @@ const EditableTable: React.FC = () => {
                     ) : (
                       <>
                         <Button
-                          onClick={() => startEditing(idx)}
+                            onClick={() => startEditing(row.id)}
                           variant="outline"
                           size="sm"
                         >
                           编辑
                         </Button>
                         <Button
-                          onClick={() => handleDelete(idx)}
+                            onClick={() => handleDelete(row.id)}
                           variant="destructive"
                           size="sm"
                         >
