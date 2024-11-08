@@ -125,7 +125,7 @@ export default function AdvancedGoogleSearch() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 
           {websiteSettings?.region && <div className="space-y-2 flex flex-col">
             <Label htmlFor="site" className='mb-2'>选择国家</Label>
@@ -144,7 +144,7 @@ export default function AdvancedGoogleSearch() {
             <Label htmlFor="site" className='mb-2'>预选搜索关键字</Label>
             <SearchableSelect
               options={keyWordsOptions}
-              placeholder="选择搜索关键字"
+              placeholder="选择关键字"
               emptyMessage="没有找到这个关键字。"
               onChange={(value: string) => {
                 setSelectKeyWord(value)
@@ -193,7 +193,7 @@ export default function AdvancedGoogleSearch() {
           }
         </div>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 
             <div className="space-y-2 flex flex-col">
               <Label htmlFor="site" className='mb-2'>网站内搜索</Label>
@@ -248,7 +248,7 @@ export default function AdvancedGoogleSearch() {
             <div className="flex items-center space-x-2">
               <Checkbox id="terms" checked={isExactPhare} onCheckedChange={handleCheckboxChange}
               />
-              <Label htmlFor="exactPhrase">开启精确匹配</Label>
+              <Label htmlFor="exactPhrase">精确匹配</Label>
             </div>
 
           }
@@ -256,7 +256,7 @@ export default function AdvancedGoogleSearch() {
             <div className="flex items-center space-x-2">
               <Checkbox id="terms" checked={isAddRegion} onCheckedChange={handleIsAddRegion}
               />
-              <Label htmlFor="exactPhrase">开启限定地区匹配</Label>
+              <Label htmlFor="exactPhrase">限定地区匹配</Label>
             </div>
           }
         </div>
