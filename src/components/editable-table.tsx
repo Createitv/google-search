@@ -26,8 +26,6 @@ const EditableTable: React.FC = () => {
   async function fetchCommonWebsite() {
     const res = await fetch('/api/common-website', {
       method: 'GET',
-      // 使用 force-cache 策略
-      // cache: 'force-cache',
     });
     const websiteSettings: Website[] = await res.json()
     console.log("websiteSettings", websiteSettings)
