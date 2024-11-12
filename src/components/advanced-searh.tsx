@@ -10,7 +10,7 @@ import { CommonWebsite, CountryCompanyID, SearchKeyWord, type WebSiteSettings } 
 import { Checkbox } from "@/components/ui/checkbox"
 import SearchableSelect, { Option } from './searchable-select'
 import { Textarea } from "@/components/ui/textarea"
-import { findCompanySuffixesByCountryName, joinWithOr } from '@/lib/utils'
+import { constructGoogleSearchURL, findCompanySuffixesByCountryName, joinWithOr } from '@/lib/utils'
 import Link from 'next/link'
 
 
@@ -48,28 +48,40 @@ export default function AdvancedGoogleSearch() {
     const settings = await res.json()
     // 网站设置
     setWebsiteSettings(settings["settings"])
-    setCountryIDS(settings["country"])
+    setCountryIDS([{
+      id: "81839120301",
+      countryEnglishName: "",
+      countryChinaName: "空国家",
+      countryAbbreviation: "",
+      companySuffixes: "",
+      countrySearchValue: "",
+      position: "",
+    }, ...settings["country"]])
     setKeyWords(settings["searchKeyWords"])
-    setCommonWebsite(settings["commonWebsite"])
+    setCommonWebsite([{
+      id: "000001",
+      url: "",
+      name: "空网页",
+    }, ...settings["commonWebsite"]])
   }
   useEffect(() => {
     if (httpOnce) {
       fetchSetting()
       setHttpOnce(false)
     }
-    const region_ = `${region && isAddRegion ? `region:${region} ` : ""}`
-    const fileType_ = `${fileType ? `filetype:${fileType} ` : ''}`
-    const timeRange_ = `${timeRange ? `after:${timeRange} ` : ""}`
+    // const region_ = `${region && isAddRegion ? `region:${region} ` : ""}`
+    // const fileType_ = `${fileType ? `filetype:${fileType} ` : ''}`
+    // const timeRange_ = `${timeRange ? `after:${timeRange} ` : ""}`
 
-    const resultCount_ = `${resultCount ? `&num=${resultCount}` : ''}`
-    const excludeWords_ = `${excludeWords ? `-${excludeWords.split(' ').join(' -')} ` : ''}`
-    const numericRange_ = `${numericRange.min && numericRange.max ? `${numericRange.min}..${numericRange.max} ` : ''}`
-    const site_ = `${site ? `site:${site} ` : ''}`
+    // const resultCount_ = `${resultCount ? `&num=${resultCount}` : ''}`
+    // const excludeWords_ = `${excludeWords ? `-${excludeWords.split(' ').join(' -')} ` : ''}`
+    // const numericRange_ = `${numericRange.min && numericRange.max ? `${numericRange.min}..${numericRange.max} ` : ''}`
+    // const site_ = `${site ? `site:${site} ` : ''}`
     // 保留词
-    let exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}" ` : selectKeyWord}`
-    // 自定义搜索词
-    let customPhrase_ = `${isCustomExactPhare ? `"${exactPhrase}" ` : exactPhrase ? `${exactPhrase} ` : ''}`
-    let companyID_ = ''
+    let exactPhrase_ = selectKeyWord
+    // 自定义搜索词, 如果必选就是非全匹配为空
+    let customPhrase_ = isCustomExactPhare ? exactPhrase : ''
+    let companyID_: string[] = []
     // 公司ID
     if (region !== "") {
       // @ts-ignore
@@ -79,11 +91,31 @@ export default function AdvancedGoogleSearch() {
     // if (selectKeyWord !== "") {
     //   exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}" ` : " "}`
     // }
-    if (exactPhrase !== "") {
+    if (isExactPhare && isCustomExactPhare) {
       // 如果关键词自定义就不用
+      exactPhrase_ = selectKeyWord + " " + customPhrase_
+      // setExactPhrase("")
     }
-    const query = `${site_}${region_}${fileType_}${timeRange_}${exactPhrase_}${customPhrase_}${numericRange_}${excludeWords_}${companyID_}${resultCount_}`
+    // 第一种语法类别
+    // const query = `${site_}${region_}${fileType_}${timeRange_}${exactPhrase_}${customPhrase_}${numericRange_}${excludeWords_}${companyID_}${resultCount_}`
+    // setSearchQuery(query.trim())
+    // 第二种google匹配
+
+    const query = constructGoogleSearchURL({
+      query: isCustomExactPhare ? "" : exactPhrase,
+      exactPhrase: exactPhrase_,
+      oneOfWords: companyID_,
+      site: site,
+      fileType: fileType,
+      lastUpdate: "",        // 过去一年
+      numRange: {
+        min: numericRange.min,
+        max: numericRange.max,
+      }
+    })
     setSearchQuery(query.trim())
+
+
   }, [region, resultCount, isAddRegion, isExactPhare, numericRange, excludeWords, site, searchQuery, fileType, exactPhrase, selectKeyWord, timeRange, isCustomExactPhare])
 
 
@@ -98,10 +130,10 @@ export default function AdvancedGoogleSearch() {
   };
 
   const handleSearch = () => {
-    const baseQuery = searchQuery.split('&')[0] as string
-    const encodedQuery = encodeURIComponent(baseQuery)
+    // const baseQuery = searchQuery.split('&')[0] as string
+    // const encodedQuery = encodeURIComponent(baseQuery)
     const resultCountParam = resultCount ? `&num=${resultCount}` : ''
-    window.open(`https://www.google.com/search?q=${encodedQuery}${resultCountParam}`, '_blank')
+    window.open(`${searchQuery}${resultCountParam}`, '_blank')
   }
   // 国家
   const countryOptions = countryIDs?.map((item: CountryCompanyID,) => {
@@ -264,13 +296,7 @@ export default function AdvancedGoogleSearch() {
             </div>
 
           }
-          {websiteSettings?.language &&
-            <div className="flex items-center space-x-2">
-              <Checkbox id="terms" checked={isAddRegion} onCheckedChange={handleIsAddRegion}
-              />
-              <Label htmlFor="exactPhrase">限定地区匹配</Label>
-            </div>
-          }
+
           {websiteSettings?.exactMatch &&
             <div className="flex items-center space-x-2">
               <Checkbox id="terms" checked={isCustomExactPhare} onCheckedChange={handleIsCustomExactPhare}
@@ -278,6 +304,15 @@ export default function AdvancedGoogleSearch() {
               <Label htmlFor="exactPhrase">自定义搜索词精确匹配</Label>
             </div>
           }
+
+          {websiteSettings?.language &&
+            <div className="flex items-center space-x-2">
+              <Checkbox id="terms" checked={isAddRegion} onCheckedChange={handleIsAddRegion}
+              />
+              <Label htmlFor="exactPhrase">限定地区匹配</Label>
+            </div>
+          }
+
         </div>
 
         <div className="space-y-2">
