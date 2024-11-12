@@ -33,6 +33,7 @@ export default function AdvancedGoogleSearch() {
   const [site, setSite] = useState("")  //地址
   const [exactPhrase, setExactPhrase] = useState("") //自定义匹配文字
   const [isExactPhare, setIsExactPhare] = useState<boolean>(true) //开启精确匹配
+  const [isCustomExactPhare, setIsCustomExactPhare] = useState<boolean>(true) //开启精确匹配
   const [excludeWords, setExcludeWords] = useState("") // 排除词
   const [numericRange, setNumericRange] = useState({ min: "", max: "" }) //数值范围
   const [resultCount, setResultCount] = useState("100") // 搜索结果数字
@@ -64,7 +65,10 @@ export default function AdvancedGoogleSearch() {
     const excludeWords_ = `${excludeWords ? `-${excludeWords.split(' ').join(' -')} ` : ''}`
     const numericRange_ = `${numericRange.min && numericRange.max ? `${numericRange.min}..${numericRange.max} ` : ''}`
     const site_ = `${site ? `site:${site} ` : ''}`
-    let exactPhrase_ = `${isExactPhare ? `"${exactPhrase}" ` : exactPhrase ? `${exactPhrase} ` : ''}`
+    // 保留词
+    let exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}" ` : selectKeyWord}`
+    // 自定义搜索词
+    let customPhrase_ = `${isCustomExactPhare ? `"${exactPhrase}" ` : exactPhrase ? `${exactPhrase} ` : ''}`
     let companyID_ = ''
     // 公司ID
     if (region !== "") {
@@ -72,16 +76,15 @@ export default function AdvancedGoogleSearch() {
       const suffixes = findCompanySuffixesByCountryName(countryIDs, region)
       companyID_ = joinWithOr(suffixes)
     }
-    if (selectKeyWord !== "") {
-      exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}" ` : " "}`
-    }
+    // if (selectKeyWord !== "") {
+    //   exactPhrase_ = `${isExactPhare ? `"${selectKeyWord}" ` : " "}`
+    // }
     if (exactPhrase !== "") {
       // 如果关键词自定义就不用
-      setSelectKeyWord("")
     }
-    const query = `${site_}${region_}${fileType_}${timeRange_}${exactPhrase_}${numericRange_}${excludeWords_}${companyID_}${resultCount_}`
+    const query = `${site_}${region_}${fileType_}${timeRange_}${exactPhrase_}${customPhrase_}${numericRange_}${excludeWords_}${companyID_}${resultCount_}`
     setSearchQuery(query.trim())
-  }, [region, resultCount, isAddRegion, isExactPhare, numericRange, excludeWords, site, searchQuery, fileType, exactPhrase, selectKeyWord, timeRange])
+  }, [region, resultCount, isAddRegion, isExactPhare, numericRange, excludeWords, site, searchQuery, fileType, exactPhrase, selectKeyWord, timeRange, isCustomExactPhare])
 
 
   const handleCheckboxChange = (checked: any) => {
@@ -89,6 +92,9 @@ export default function AdvancedGoogleSearch() {
   };
   const handleIsAddRegion = (checked: any) => {
     setIsaddRegion(checked);
+  };
+  const handleIsCustomExactPhare = (checked: any) => {
+    setIsCustomExactPhare(checked);
   };
 
   const handleSearch = () => {
@@ -104,12 +110,12 @@ export default function AdvancedGoogleSearch() {
 
   // 关键词
   const keyWordsOptions = keyWords?.map((item: SearchKeyWord) => {
-    return { value: item.word, label: item.word }
+    return { value: item.word, label: `💡${item.word.trim()}  \n🆚${item.toEnglishWord}`, }
   }) as Option[]
 
   // 关键词
   const commonWebsiteOptions = commonWebsite?.map((item: CommonWebsite) => {
-    return { value: item.url, label: item.name }
+    return { value: item.url, label: `🕸️${item.name}  ${item.url}` }
   }) as Option[]
   return (
     <Card className="w-full min-w-fit mx-auto">
@@ -243,12 +249,12 @@ export default function AdvancedGoogleSearch() {
 
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {websiteSettings?.exactMatch &&
             <div className="flex items-center space-x-2">
               <Checkbox id="terms" checked={isExactPhare} onCheckedChange={handleCheckboxChange}
               />
-              <Label htmlFor="exactPhrase">精确匹配</Label>
+              <Label htmlFor="exactPhrase">预选关键词精确匹配</Label>
             </div>
 
           }
@@ -257,6 +263,13 @@ export default function AdvancedGoogleSearch() {
               <Checkbox id="terms" checked={isAddRegion} onCheckedChange={handleIsAddRegion}
               />
               <Label htmlFor="exactPhrase">限定地区匹配</Label>
+            </div>
+          }
+          {websiteSettings?.exactMatch &&
+            <div className="flex items-center space-x-2">
+              <Checkbox id="terms" checked={isCustomExactPhare} onCheckedChange={handleIsCustomExactPhare}
+              />
+              <Label htmlFor="exactPhrase">自定义搜索词精确匹配</Label>
             </div>
           }
         </div>
