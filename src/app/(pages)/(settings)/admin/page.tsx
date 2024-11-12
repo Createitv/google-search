@@ -1,16 +1,12 @@
 'use client'
 
-import AdvancedGoogleSearch from '@/components/advanced-searh'
-import EditableTable from '@/components/editable-table'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { toast } from '@/hooks/use-toast'
-import { getWebsiteSettings } from '@/server/action'
+import { constructWebSettingData } from '@/lib/utils'
 import { WebSiteSettings } from '@prisma/client'
 import React, { useEffect, useState } from 'react'
-
-
 
 export default function AdminPage({ }) {
   return (
@@ -20,7 +16,6 @@ export default function AdminPage({ }) {
     </div>
   )
 }
-
 interface Feature {
   id: string
   name: string
@@ -68,7 +63,9 @@ export function FeatureToggles() {
         {
           id: '7', name: '开启时间范围', enabled: setRes?.timestamp,
         },
-
+        {
+          id: '8', name: '禁止显示搜索语法', enabled: setRes?.showGeneratedGrammer,
+        },
       ]
       // @ts-ignore
       setFeatures(options)
@@ -77,7 +74,7 @@ export function FeatureToggles() {
       fetchSetting()
       setHttpOnce(false)
     }
-  })
+  }, [features])
 
   const handleToggle = (id: string) => {
     setFeatures(features.map(feature =>
@@ -86,22 +83,32 @@ export function FeatureToggles() {
   }
   const handleSave = async () => {
     // 这里模拟保存到数据库的操作
-    console.log('Saving features:', features, websiteSettings)
-    // 显示保存成功的提示
-    toast({
-      title: "设置已保存",
-      description: "您的功能开关设置已成功保存到数据库。",
+    console.log('Saving features:', constructWebSettingData(features))
+    const httpRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/settings`, {
+      method: "POST",
+      body:
+        JSON.stringify(constructWebSettingData(features))
+
     })
+    const updataRes = await httpRes.json()
+    if (updataRes.status === "ok") {
+      // 显示保存成功的提示
+      toast({
+        title: "设置已保存",
+        description: "您的功能开关设置已成功保存到数据库。",
+        duration: 1300,
+      })
+    }
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto flex items-center flex-col">
+    <div className="p-6 max-w-8xl mx-auto flex items-center flex-col">
       <h1 className="text-2xl font-bold mb-6">功能开关设置</h1>
-      <div className="grid grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
         {features.map((feature) => (
           <div key={feature.id} className="flex items-center justify-between space-x-2">
             <Label htmlFor={`switch-${feature.id}`} className="flex flex-col space-y-1">
-              <span>{feature.name}</span>
+              <span className='w-full'>{feature.name}</span>
               <span className="text-sm text-muted-foreground">
                 {feature.enabled ? '已启用' : '已禁用'}
               </span>

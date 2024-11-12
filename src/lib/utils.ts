@@ -36,25 +36,52 @@ export function findCompanySuffixesByCountryName(
   return country ? country.companySuffixes : undefined;
 }
 
-export function getFeatureNameByTag(tag: string): string | undefined {
-  switch (tag) {
-    case "region":
-      return "选择国家";
-    case "excludeWords":
-      return "排除关键字";
-    case "website":
-      return "网站内搜索";
-    case "searchResultNum":
-      return "搜索结果";
-    case "exactMatch":
-      return "开启精确匹配";
-    case "language":
-      return "开启限定区域匹配";
-    case "timestamp":
-      return "开启时间范围";
-    case "fileType":
-      return "文件类型搜索";
-    default:
-      return undefined; // 如果没有匹配到任何tag，则返回undefined
-  }
+// 重新构建函数
+export function constructWebSettingData(
+  items: { id: any; enabled: boolean }[],
+) {
+  const data = {
+    region: false, // 假设"选择国家"对应的是region
+    language: false, // 如果有语言选项，这里可以设置为true或false，但目前没有提供相关信息
+    website: false, // 同样假设网站选项未启用
+    searchResultNum: false,
+    exactMatch: false,
+    filetype: false,
+    timestamp: false,
+    excluedWords: false,
+    showGeneratedGrammer: false,
+  };
+
+  items.forEach((item: { id: any; enabled: boolean }) => {
+    switch (item.id) {
+      case "1":
+        data.region = item.enabled;
+        break;
+      case "2":
+        data.excluedWords = item.enabled;
+        break;
+      case "3":
+        data.filetype = item.enabled;
+        break;
+      case "4":
+        data.searchResultNum = item.enabled;
+        break;
+      case "5":
+        data.exactMatch = item.enabled;
+        break;
+      case "6":
+        data.language = item.enabled;
+        break;
+      case "7":
+        data.timestamp = item.enabled;
+        break;
+      case "8":
+        data.showGeneratedGrammer = !item.enabled; // 注意这里取反，因为配置中是禁止显示
+        break;
+      default:
+        break;
+    }
+  });
+
+  return data;
 }

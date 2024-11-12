@@ -1,7 +1,7 @@
 import { SETTING_DB_ID } from "@/lib/constant";
 import { db } from "./db";
 import { NewProduct } from "@/components/editable-table";
-import { CommonWebsite } from "@prisma/client";
+import { CommonWebsite, WebSiteSettings } from "@prisma/client";
 
 // 获取设置缩写
 export const getWebsiteSettings = async () => {
@@ -102,4 +102,29 @@ export const updateCommonWebsite = async (option: CommonWebsite) => {
 export const getSearchKey = async () => {
   const res = await db.searchKeyWord.findMany();
   return res;
+};
+
+// 修改网站设置
+export const updateWebsiteSettings = async (option: WebSiteSettings) => {
+  try {
+    const res = await db.webSiteSettings.update({
+      where: {
+        id: SETTING_DB_ID,
+      },
+      data: {
+        ...option,
+      },
+    });
+    return {
+      code: 200,
+      status: "ok",
+      res,
+    };
+  } catch (error) {
+    return {
+      code: 200,
+      status: "error",
+      error,
+    };
+  }
 };

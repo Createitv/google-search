@@ -1,5 +1,5 @@
 'use client'
-
+import Image from 'next/image'
 import { useState, useEffect, SetStateAction } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -120,7 +120,13 @@ export default function AdvancedGoogleSearch() {
   return (
     <Card className="w-full min-w-fit mx-auto">
       <CardHeader>
-        <CardTitle>高级Google搜索</CardTitle>
+
+        <CardTitle className='flex flex-row items-center'>
+          <Image src='/favicon.ico' alt="" width={40}
+            height={40}
+            alt="Picture of the author" ></Image>高级Google搜索
+        </CardTitle>
+
         <CardDescription className='flex flex-row justify-between'>
           <p>
             选择搜索条件,生成高级搜索查询
@@ -249,7 +255,7 @@ export default function AdvancedGoogleSearch() {
 
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {websiteSettings?.exactMatch &&
             <div className="flex items-center space-x-2">
               <Checkbox id="terms" checked={isExactPhare} onCheckedChange={handleCheckboxChange}
@@ -283,18 +289,22 @@ export default function AdvancedGoogleSearch() {
             placeholder="🔍 请输入搜索关键词"
           />
         </div>
-        <div className="space-y-2">
-          <label htmlFor="searchQuery" className="text-sm font-medium">
-            生成的搜索词:
-          </label>
-          <Textarea
-            id="searchQuery"
-            className='h-24'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="这里显示生成的搜索词"
-          />
-        </div>
+        {
+          websiteSettings?.showGeneratedGrammer &&
+          <div className="space-y-2">
+            <label htmlFor="searchQuery" className="text-sm font-medium">
+              生成的搜索词:
+            </label>
+            <Textarea
+              id="searchQuery"
+              className='h-24'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="这里显示生成的搜索词"
+            />
+          </div>
+        }
+
       </CardContent >
       <CardFooter>
         <Button className="w-full" onClick={handleSearch}>
